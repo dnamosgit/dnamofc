@@ -1,14 +1,12 @@
-// Reading and saving a site's editable content, and its uploaded photos.
-import { clean, templateFor } from './templates.js';
-import { now } from './auth.js';
+// Reading a site's saved content and its uploaded photos from the shared database.
+// The admin (in the Foundation project) writes them; this project only displays them.
+import { CLUB } from './club.js';
 
-const MAX_UPLOAD = 1500000;   // bytes; the database allows up to 2 MB per row
-
-// The site a request is for: { id, tpl }, or null when none is set up.
-// This project serves one site, the first one of kind 'full'.
+// The site this project shows: the Dnamo Football Club site in the shared database,
+// as { id, tpl }, or null when it has not been set up.
 export async function siteFor(env) {
-  const row = await env.DB.prepare("SELECT id, template FROM sites WHERE kind = 'full' ORDER BY id LIMIT 1").first();
-  return row ? { id: row.id, tpl: templateFor(row.template) } : null;
+  const row = await env.DB.prepare("SELECT id FROM sites WHERE kind = 'full' AND template = 'club' ORDER BY id LIMIT 1").first();
+  return row ? { id: row.id, tpl: CLUB } : null;
 }
 
 // Only what has been saved, as { key: value }. Unsaved keys are absent.
@@ -20,46 +18,6 @@ export async function savedContent(env, siteId, tpl) {
     try { out[r.key] = JSON.parse(r.value); } catch (e) { /* ignore a damaged row; the default shows */ }
   }
   return out;
-}
-
-export async function saveContent(env, siteId, key, value, userId, tpl) {
-  if (!tpl.KEYS.includes(key)) throw new Error('Unknown setting.');
-  if (value === null) {           // back to the built-in original
-    await env.DB.prepare('DELETE FROM content WHERE site_id = ? AND key = ?').bind(siteId, key).run();
-    return tpl.DEFAULTS[key];
-  }
-  const tidy = clean(tpl, key, value);
-  await env.DB.prepare(
-    `INSERT INTO content (site_id, key, value, updated_at, updated_by) VALUES (?, ?, ?, ?, ?)
-     ON CONFLICT (site_id, key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at, updated_by = excluded.updated_by`)
-    .bind(siteId, key, JSON.stringify(tidy), now(), userId).run();
-  return tidy;
-}
-
-// --- Photos ---------------------------------------------------------------
-
-// The real type is read from the file's first bytes, never trusted from the browser.
-function sniff(b) {
-  if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return 'image/jpeg';
-  if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return 'image/png';
-  if (b[0] === 0x47 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x38) return 'image/gif';
-  if (b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 && b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50) return 'image/webp';
-  return null;
-}
-
-export async function saveMedia(env, siteId, request, userId) {
-  const declared = Number(request.headers.get('Content-Length') || 0);
-  if (declared > MAX_UPLOAD) throw new Error('That photo is too large.');
-  const buf = await request.arrayBuffer();
-  if (!buf.byteLength) throw new Error('No photo was sent.');
-  if (buf.byteLength > MAX_UPLOAD) throw new Error('That photo is too large.');
-  const type = sniff(new Uint8Array(buf.slice(0, 12)));
-  if (!type) throw new Error('Use a JPG, PNG, WebP or GIF image.');
-  const id = [...crypto.getRandomValues(new Uint8Array(12))].map((x) => x.toString(16).padStart(2, '0')).join('');
-  const name = decodeURIComponent(request.headers.get('X-File-Name') || '').replace(/[^\w .()-]/g, '').slice(0, 120);
-  await env.DB.prepare('INSERT INTO media (id, site_id, type, size, name, data, created_at, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-    .bind(id, siteId, type, buf.byteLength, name, buf, now(), userId).run();
-  return { id, url: '/media/' + id, type, size: buf.byteLength };
 }
 
 // Public: /media/<id>. Ids are random and files never change, so they cache forever.

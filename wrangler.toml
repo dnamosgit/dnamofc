@@ -1,12 +1,15 @@
-# Cloudflare Pages project for dnamofc.com: the public site, the admin center and its database.
+# Cloudflare Pages project for dnamofc.com: the public Dnamo FC website.
+#
+# It has no admin of its own. The admin center lives in the Dnamo Foundation project and
+# saves to the shared database below; this project reads it and shows what was saved.
+# The database tables are owned by the Foundation project's migrations, so this
+# project has none.
 name = "dnamofc"
 pages_build_output_dir = "public"
 compatibility_date = "2026-10-01"
 
-# Database for admin accounts, sessions and editable site content.
-# Created with `npx wrangler d1 create dnamofc-admin`; the id below is an identifier, not a secret.
+# The shared database (an identifier, not a secret): the same one the admin saves to.
 [[d1_databases]]
 binding = "DB"
-database_name = "dnamofc-admin"
-database_id = "3a69ba58-7a7e-4d4d-94d5-c4267879ad56"
-migrations_dir = "migrations"
+database_name = "dnamo-admin"
+database_id = "c6520aff-756d-447f-b9f2-f34aa0c5e778"

@@ -4,8 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler pages dev --port 8788 --ip 127.0.0.1",
-    "db:local": "wrangler d1 migrations apply dnamofc-admin --local",
-    "db:remote": "wrangler d1 migrations apply dnamofc-admin --remote",
+    "build": "node tools/build-club.mjs",
     "deploy": "wrangler pages deploy"
   },
   "devDependencies": {

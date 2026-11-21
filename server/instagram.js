@@ -10,7 +10,7 @@
 // Posts are kept for half an hour, so Instagram is asked at most twice an hour
 // however many people visit. If Instagram cannot be reached, the last posts
 // that were fetched keep showing.
-import { now } from './auth.js';
+import { now } from './time.js';
 
 const KEEP = 1800;              // seconds a fetched list is used before asking again
 const RENEW_AFTER = 7 * 86400;  // renew the access token once it is a week old

@@ -1,4 +1,2 @@
-# Copy to .dev.vars and fill in. Test values only; never use the live ones here.
-ADMIN_PATH=desk-localtest
-SETUP_TOKEN=local-setup-code-1234
+# Copy to .dev.vars for local testing. Only needed for the Instagram gallery.
 # INSTAGRAM_TOKEN=
