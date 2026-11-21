@@ -13,24 +13,20 @@ everything edited in the admin.
 
 ## Set it up on Cloudflare (once)
 
-1. **Create the database.** In a terminal in this folder:
+1. **Database.** It is already created (`dnamofc-admin`, id in `wrangler.toml`) and its tables are
+   in place. To set it up again from scratch (a different Cloudflare account):
    ```bash
    npm install
    npx wrangler login
-   npx wrangler d1 create dnamofc-admin
+   npx wrangler d1 create dnamofc-admin   # paste the id it prints into wrangler.toml
+   npm run db:remote                      # create the tables
    ```
-   Copy the `database_id` it prints into `wrangler.toml`, replacing `REPLACE-WITH-YOUR-DATABASE-ID`
-   (it is an identifier, not a secret), then commit that change.
-2. **Create the tables:**
-   ```bash
-   npm run db:remote
-   ```
-3. **Create the Pages project.** In the Cloudflare dashboard: Workers & Pages → Create →
+2. **Create the Pages project.** In the Cloudflare dashboard: Workers & Pages → Create →
    Pages → Connect to Git → choose this repository. Build command: leave empty.
    Build output directory: `public`.
-4. **Add the D1 binding.** Project → Settings → Bindings → add a D1 database binding named `DB`
+3. **Add the D1 binding.** Project → Settings → Bindings → add a D1 database binding named `DB`
    pointing at `dnamofc-admin` (production).
-5. **Add secrets.** Project → Settings → Variables and Secrets → add as type *Secret*:
+4. **Add secrets.** Project → Settings → Variables and Secrets → add as type *Secret*:
    - `ADMIN_PATH`: the secret address of the admin, at least 8 letters and numbers, for
      example `desk-7f3k29xq`. The admin is then at `https://<your site>/desk-7f3k29xq/`.
    - `SETUP_TOKEN`: a one-time setup code, at least 16 characters.
@@ -38,9 +34,9 @@ everything edited in the admin.
      show Instagram posts. The site renews it by itself.
 
    Type these yourself and keep them private. Never put them in the repository.
-6. **Redeploy**, open `https://<your site>/<ADMIN_PATH>/`, and create the owner account with
+5. **Redeploy**, open `https://<your site>/<ADMIN_PATH>/`, and create the owner account with
    the setup code. After that the setup screen never appears again.
-7. **dnamofc.com.** When ready, add the domain under the project's Custom domains and update
+6. **dnamofc.com.** When ready, add the domain under the project's Custom domains and update
    the DNS as Cloudflare says. The current site on that domain keeps working until then.
 
 Every push to `main` redeploys automatically.
