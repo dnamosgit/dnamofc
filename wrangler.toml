@@ -1,0 +1,13 @@
+# Cloudflare Pages project for dnamofc.com: the public site, the admin center and its database.
+name = "dnamofc"
+pages_build_output_dir = "public"
+compatibility_date = "2026-10-01"
+
+# Database for admin accounts, sessions and editable site content.
+# Create it once with `npx wrangler d1 create dnamofc-admin`, then paste the id it prints
+# in place of REPLACE-WITH-YOUR-DATABASE-ID (an identifier, not a secret). See README.md.
+[[d1_databases]]
+binding = "DB"
+database_name = "dnamofc-admin"
+database_id = "REPLACE-WITH-YOUR-DATABASE-ID"
+migrations_dir = "migrations"

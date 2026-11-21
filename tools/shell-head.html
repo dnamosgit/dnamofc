@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-site="club" data-theme-key="dnamoFcTheme" data-splash-key="dnamoFcSplash">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">{{extraHead}}
+<meta name="theme-color" content="#000000">
+<!-- Browser tab icon and phone home-screen icon -->
+<link rel="icon" type="image/jpeg" href="/logo.jpg">
+<link rel="apple-touch-icon" href="/logo.jpg">
+<link rel="preload" as="image" href="/logo.jpg">
+<script>try{if(localStorage.getItem('dnamoFcTheme')==='light')document.documentElement.removeAttribute('data-theme')}catch(e){}
+try{if(sessionStorage.getItem('dnamoFcSplash'))document.documentElement.className='no-splash'}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body{{bodyClass}}>
+<!-- Logo splash: phones and tablets only, once per visit (see styles.css and script.js) -->
+<div class="splash" aria-hidden="true"><img data-slot="logo" src="/logo.jpg" alt="" width="447" height="447"></div>
+<div class="prog"></div>
+
